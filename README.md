@@ -9,3 +9,5 @@ A lightweight and flexible Java-based wrapper designed to launch target JAR file
 ## How to Edit the Startup Command
 - Open ```settings.properties```
 - You can change all the JVM arguments there
+
+Made with 💖 by [1Kiwii](https://youtube.com/@OneKiwii)
