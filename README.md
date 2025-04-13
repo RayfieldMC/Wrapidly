@@ -24,7 +24,7 @@ project-root/
 ├── src/
 │   └── Launcher.java
 ├── manifest.txt
-└── launcher.properties (auto-generated on first run)
+└── launcher.properties (if you are testing)
 ```
 
 ### 📦 Steps to Build
