@@ -61,4 +61,4 @@ java -jar launcher.jar
 
 ---
 
-Made with 💖 by [1Kiwii](https://youtube.com/@OneKiwii)
+Made with 💖 by [VyxialX](https://youtube.com/@VyxialX)
