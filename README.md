@@ -1,64 +1,53 @@
-# JVM Wrapper Launcher
-A lightweight and flexible Java-based wrapper designed to launch target JAR files with custom JVM arguments. Ideal for environments or hosting platforms where direct modification of JVM parameters is restricted. Simply configure your desired arguments and target application, and this wrapper handles the rest.
+# 🎮 Minecraft Server Launcher Wrapper
+
+A **lightweight Java launcher wrapper** for Minecraft servers — perfect for hosting panels like **Pterodactyl**!  
+Customize JVM args, remap commands (like `stop` → `end` for BungeeCord), and get slick Discord webhook alerts on server start/stop.
 
 ---
 
-## How to Use
-- Download ```Launcher.jar```
-- Place it on your root directory where ```server.jar``` is located
-- Make the startup executable ```Launcher.jar``` instead of ```server.jar```
+## 🚀 Features
+
+- **Custom JVM arguments** via `launcher.properties`  
+- **Command remapping** with `remap.properties` (optional & secret)  
+- **Discord webhook support** (`launcher-webhook.properties`) with clean embed messages  
+- Proxy console input/output, so your server runs smoothly  
+- **Standalone `.jar`** — no external dependencies!
 
 ---
 
-## How to Edit the Startup Command
-- Open ```launcher.properties```
-- You can change all the JVM arguments there
+## 🛠 Getting Started
+
+### 1. Upload Files
+
+- Upload `Launcher.jar` to your server’s working directory.  
+- Create or upload these config files:  
+
+  - `launcher.properties`  
+    ```properties
+    java -javaagent:authlibinjector.jar=ely.by -jar server.jar
+    ```
+
+  - `launcher-webhook.properties` (optional)  
+    ```properties
+    webhookUrl=https://discord.com/api/webhooks/your_webhook_url_here
+    ```
+
+  - `remap.properties` (optional and you need to create the remap.properties file on your own)  
+    ```properties
+    stop=end
+    restart=stop
+    ```
 
 ---
 
-## 🛠️ How to Build the Launcher `.jar`
+### 2. Configure Pterodactyl
 
-### 📁 Project Structure
-```
-project-root/
-├── src/
-│   └── Launcher.java
-├── manifest.txt
-└── launcher.properties (if you are testing)
-```
-
-### 📦 Steps to Build
-
-#### 1. **Compile the Code**
-Run this in your terminal to compile the `Launcher.java` file into the `build/` folder:
+Set your startup command to:  
 ```bash
-javac -d build src/Launcher.java
+java -jar Launcher.jar
 ```
 
-#### 2. **Create a Manifest File**
-Make a file called `manifest.txt` with this inside:
-```
-Manifest-Version: 1.0
-Main-Class: Launcher
-```
-> ⚠️ Make sure there's a blank line at the end of the file!
-
-#### 3. **Package It as a `.jar`**
-Now run this to build your launcher JAR:
+If you have only access to server jar then set your server jar file to
 ```bash
-jar cfm launcher.jar manifest.txt -C build/ .
+Launcher.jar
 ```
-
-- `c` – create
-- `f` – output to file
-- `m` – include manifest
-- `-C build/ .` – include all compiled class files
-
-#### 4. **Run the Launcher**
-```bash
-java -jar launcher.jar
-```
-
----
-
-Made with 💖 by [VyxialX](https://youtube.com/@VyxialX)
