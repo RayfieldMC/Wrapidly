@@ -10,6 +10,8 @@ Customize JVM args, remap commands (like `stop` → `end` for BungeeCord), and g
 This project is licensed under the MIT License.  
 Feel free to use, modify, and share — just give credit!
 
+---
+
 ## 🚀 Features
 
 - **Custom JVM arguments** via `launcher.properties`  
