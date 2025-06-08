@@ -7,11 +7,8 @@ Customize JVM args, remap commands (like `stop` → `end` for BungeeCord), and g
 
 ## 📜 License
 
-This project is licensed under **Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)**.
-
-You are **not allowed to fork, copy, modify, or redistribute** this code without permission.
-
-© 2025 Rarfield. All rights reserved.
+This project is licensed under the MIT License.  
+Feel free to use, modify, and share — just give credit!
 
 ## 🚀 Features
 
