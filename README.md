@@ -3,6 +3,9 @@
 A **lightweight Java launcher wrapper** for Minecraft servers — perfect for hosting panels like **Pterodactyl**!  
 Customize JVM args, remap commands (like `stop` → `end` for BungeeCord), and get slick Discord webhook alerts on server start/stop.
 
+Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
+Consider joining our [Discord](https://discord.gg/3BGG8tcvVR)
+
 ---
 
 ## 📜 License 
@@ -56,5 +59,3 @@ Set your startup command to:
 java -jar Launcher.jar
 ```
 
-Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
-Consider joining our [Discord](https://discord.gg/3BGG8tcvVR)
