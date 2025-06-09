@@ -32,7 +32,7 @@ Feel free to use, modify, and share — just give credit!
 ### 1. Upload Files
 
 - Upload `Launcher.jar` to your server’s working directory.  
-- Create or upload these config files:  
+- Config files:  
 
   - `launcher.properties`  
     ```properties
