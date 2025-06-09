@@ -52,3 +52,7 @@ Feel free to use, modify, and share — just give credit!
 Set your startup command to:  
 ```bash
 java -jar Launcher.jar
+```
+
+Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)
+Make sure to join our [Discord](https://discord.gg/3BGG8tcvVR)
