@@ -56,4 +56,5 @@ Set your startup command to:
 java -jar Launcher.jar
 ```
 
-Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)
+Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
+Consider joining our [Discord](https://discord.gg/3BGG8tcvVR)
