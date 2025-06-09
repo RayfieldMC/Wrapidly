@@ -1,15 +1,16 @@
 # 🎮 Minecraft Server Launcher Wrapper
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A **lightweight Java launcher wrapper** for Minecraft servers — perfect for hosting panels like **Pterodactyl**!  
 Customize JVM args, remap commands (like `stop` → `end` for BungeeCord), and get slick Discord webhook alerts on server start/stop.
 
 ---
 
-## 📜 License
+## 📜 License 
 
 This project is licensed under the MIT License.  
 Feel free to use, modify, and share — just give credit!
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
