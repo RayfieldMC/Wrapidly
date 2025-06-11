@@ -1,4 +1,4 @@
-![Banner](https://github.com/user-attachments/assets/5aadc164-ee91-4ad5-92f9-275d80bacb84)
+![image(2)](https://github.com/user-attachments/assets/ffa35a17-44a4-4f5f-aed9-cfc5f35c009d)
 
 # 🚀 Wrapidly - JVM Server Launcher Wrapper
 
