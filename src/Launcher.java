@@ -31,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 public class Launcher {
     public static void main(String[] args) {
         try {
-            // Ensure wrapper.properties exists
             File propsFile = new File("wrapper.properties");
             if (!propsFile.exists()) {
                 try (FileWriter writer = new FileWriter(propsFile)) {
@@ -54,20 +53,16 @@ public class Launcher {
                 }
             }
 
-            // Load wrapper.properties
             Properties props = new Properties();
             try (FileReader reader = new FileReader(propsFile)) {
                 props.load(reader);
             }
 
-            // Parse jvm command
             String jvmCommand = props.getProperty("jvm", "java -jar server.jar").trim();
             List<String> command = new ArrayList<>(Arrays.asList(jvmCommand.split(" ")));
 
-            // Parse webhook
             String webhookUrl = props.getProperty("webhook", "").trim();
 
-            // Parse remap
             Map<String, String> remap = new HashMap<>();
             for (String key : props.stringPropertyNames()) {
                 if (key.startsWith("remap.")) {
@@ -79,17 +74,14 @@ public class Launcher {
                 }
             }
 
-            // Send "Server started" webhook if webhook is set
             if (!webhookUrl.isEmpty()) {
                 sendDiscordWebhook(webhookUrl, "🟢 **Server Started**", "Your Minecraft server has started successfully.");
             }
 
-            // Build and start the process
             ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
-            // Output thread
             Thread outputThread = new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
@@ -101,7 +93,6 @@ public class Launcher {
                 }
             });
 
-            // Input thread with remap
             Thread inputThread = new Thread(() -> {
                 try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
                      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
@@ -120,16 +111,13 @@ public class Launcher {
             outputThread.start();
             inputThread.start();
 
-            // Wait for process to exit
             int exitCode = process.waitFor();
             System.out.println("[Launcher] The server exited with code " + exitCode);
 
-            // Send "Server stopped" webhook if webhook is set
             if (!webhookUrl.isEmpty()) {
                 sendDiscordWebhook(webhookUrl, "🔴 **Server Stopped**", "Your Minecraft server has stopped. Exit code: " + exitCode);
             }
 
-            // Clean up
             outputThread.interrupt();
             inputThread.interrupt();
             process.destroy();
@@ -140,14 +128,13 @@ public class Launcher {
         }
     }
 
-    // Send webhook to Discord
     private static void sendDiscordWebhook(String webhookUrl, String title, String description) {
         try {
             String jsonPayload = String.format(
                 "{\"embeds\": [{\"title\": \"%s\", \"description\": \"%s\", \"color\": %d}]}",
                 escapeJson(title),
                 escapeJson(description),
-                3066993 // Green by default
+                3066993 
             );
 
             URL url = new URL(webhookUrl);
@@ -174,7 +161,6 @@ public class Launcher {
         }
     }
 
-    // Escape JSON string
     private static String escapeJson(String str) {
         return str.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
     }
