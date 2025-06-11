@@ -1,63 +1,49 @@
-![Banner](https://github.com/user-attachments/assets/5aadc164-ee91-4ad5-92f9-275d80bacb84)
+![image(2)](https://github.com/user-attachments/assets/ffa35a17-44a4-4f5f-aed9-cfc5f35c009d)
 
-# 🎮 Minecraft Server Launcher Wrapper
+# 🚀 Wrapidly - JVM Server Launcher Wrapper
 
-A **lightweight Java launcher wrapper** for Minecraft servers — perfect for hosting panels like **Pterodactyl**!  
-Customize JVM args, remap commands (like `stop` → `end` for BungeeCord), and get slick Discord webhook alerts on server start/stop.
+Wrapidly is a **lightweight, standalone Java launcher wrapper** for Minecraft servers — designed for hosting panels like **Pterodactyl**!  
+Easily tweak JVM arguments, **remap commands** (like `stop → end` for BungeeCord), and get clean **Discord webhook alerts** when your server starts or stops.
 
 Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
-Consider joining our [Discord](https://discord.gg/3BGG8tcvVR)
+Come vibe in our [Discord](https://discord.gg/3BGG8tcvVR)
 
 ---
 
-## 📜 License 
+## 📜 License
 
-This project is licensed under the MIT License.  
-Feel free to use, modify, and share — just give credit!
+Licensed under the **MIT License**.  
+You’re free to use, modify, and share — just drop a credit 🙌
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🚀 Features
+## 💡 Features
 
-- **Custom JVM arguments** via `launcher.properties`  
-- **Command remapping** with `remap.properties` (optional & secret)  
-- **Discord webhook support** (`launcher-webhook.properties`) with clean embed messages  
-- Proxy console input/output, so your server runs smoothly  
-- **Standalone `.jar`** — no external dependencies!
+- 🧠 **Custom JVM arguments** from `wrapper.properties`
+- 🔄 **Command remapping** using `remap.` keys (ex: remap.stop=end)
+- 📣 **Discord webhook** support for start/stop alerts
 
 ---
 
-## 🛠 Getting Started
+## ⚙️ Getting Started
 
-### 1. Upload Files
+### 1️⃣ Upload the Files
 
-- Upload `Launcher.jar` to your server’s working directory.  
-- Config files:  
+Just drop `Launcher.jar` into your server folder.  
+On the **first run**, a `wrapper.properties` file will auto-generate with all settings:
 
-  - `launcher.properties`  
-    ```properties
-    java -javaagent:authlibinjector.jar=ely.by -jar server.jar
-    ```
+```properties
+# JVM command to start your Minecraft server
+jvm=java -jar server.jar
 
-  - `launcher-webhook.properties` (optional)  
-    ```properties
-    webhookUrl=https://discord.com/api/webhooks/your_webhook_url_here
-    ```
+# Discord webhook URL (optional)
+webhook=
 
-  - `remap.properties` (optional, you have to create the file on your own)  
-    ```properties
-    stop=end
-    restart=stop
-    ```
-
----
-
-### 2. Configure Pterodactyl
-
-Set your startup command to:  
-```bash
-java -jar Launcher.jar
-```
-
+# Command remapping (optional)
+# Format: remap.<original_command>=<replacement_command>
+# 
+# Examples (uncomment to enable):
+# remap.stop=end
+# remap.restart=restartwrapper
