@@ -1,6 +1,6 @@
 ![image(2)](https://github.com/user-attachments/assets/ffa35a17-44a4-4f5f-aed9-cfc5f35c009d)
 
-# 🚀 Wrapidly - JVM Server Launcher Wrapper
+# Wrapidly - JVM Server Launcher Wrapper
 
 Wrapidly is a **lightweight, standalone Java launcher wrapper** for Minecraft servers — designed for hosting panels like **Pterodactyl**!  
 Easily tweak JVM arguments, **remap commands** (like `stop → end` for BungeeCord), and get clean **Discord webhook alerts** when your server starts or stops.
@@ -10,7 +10,7 @@ Come vibe in our [Discord](https://discord.gg/3BGG8tcvVR)
 
 ---
 
-## 📜 License
+## License
 
 Licensed under the **MIT License**.  
 You’re free to use, modify, and share — just drop a credit 🙌
@@ -19,17 +19,17 @@ You’re free to use, modify, and share — just drop a credit 🙌
 
 ---
 
-## 💡 Features
+## Features
 
-- 🧠 **Custom JVM arguments** from `wrapper.properties`
-- 🔄 **Command remapping** using `remap.` keys (ex: remap.stop=end)
-- 📣 **Discord webhook** support for start/stop alerts
+- **Custom JVM arguments** from `wrapper.properties`
+- **Command remapping** using `remap.` keys (ex: remap.stop=end)
+- **Discord webhook** support for start/stop alerts
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
-### 1️⃣ Upload the Files
+### Upload the Files
 
 Just drop `Launcher.jar` into your server folder.  
 On the **first run**, a `wrapper.properties` file will auto-generate with all settings:
