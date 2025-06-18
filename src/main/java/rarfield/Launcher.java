@@ -1,14 +1,13 @@
 package rarfield;
 
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.LoaderOptions;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Launcher {
     public static void main(String[] args) {
@@ -67,9 +66,7 @@ public class Launcher {
         try {
             Process process = pb.start();
 
-            ExecutorService executor = Executors.newFixedThreadPool(2);
-
-            Runnable outputTask = () -> {
+            Thread outputThread = new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -78,9 +75,9 @@ public class Launcher {
                 } catch (IOException e) {
                     logError("Error reading output: " + e.getMessage());
                 }
-            };
+            }, "OutputThread");
 
-            Runnable inputTask = () -> {
+            Thread inputThread = new Thread(() -> {
                 try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
                      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
                     String commandLine;
@@ -96,22 +93,32 @@ public class Launcher {
                         writer.flush();
                     }
                 } catch (IOException e) {
-                    // Likely server exited, so stop input
+                    logError("Error sending input: " + e.getMessage());
                 }
-            };
+            }, "InputThread");
 
-            executor.submit(outputTask);
-            executor.submit(inputTask);
+            outputThread.start();
+            inputThread.start();
 
-            int exitCode = process.waitFor(); // wait for server to exit
+            // Wait for server process to exit
+            int exitCode = process.waitFor();
             logInfo("Server exited with code " + exitCode);
+
             sendWebhook(webhookUrl, "Server stopped with code `" + exitCode + "`", 0xc0392b); // Red
 
-            executor.shutdownNow(); // shut down both input/output
-            process.destroy();
+            // Interrupt threads
+            outputThread.interrupt();
+            inputThread.interrupt();
+
+            // Cleanup process
+            if (process.isAlive()) process.destroy();
+
+            // Exit Wrapidly with same exit code as server
+            System.exit(exitCode);
 
         } catch (Exception e) {
             logError("Failed to launch server: " + e.getMessage());
+            System.exit(1);
         }
     }
 
@@ -138,7 +145,7 @@ public class Launcher {
                 os.flush();
             }
 
-            conn.getResponseCode(); // trigger request
+            conn.getResponseCode(); // Send the request
 
         } catch (Exception e) {
             logError("Failed to send webhook: " + e.getMessage());
