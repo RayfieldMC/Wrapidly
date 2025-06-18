@@ -1,0 +1,24 @@
+apply plugin: 'java'
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    implementation name: 'snakeyaml-2.2'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'rarfield.Launcher'
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
