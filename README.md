@@ -1,4 +1,4 @@
-
+![Banner](https://github.com/user-attachments/assets/2f9c92d5-071f-4181-9975-36a13f1a6dbd)
 # Wrapidly - JVM Server Launcher Wrapper
 
 **Wrapidly** is a lightweight, standalone Java launcher wrapper for Minecraft servers. Made for changing the **JVM Arguments** even if your server hosting doesn't allow it.
