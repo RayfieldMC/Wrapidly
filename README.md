@@ -1,39 +1,40 @@
 ![Banner](https://github.com/user-attachments/assets/2f9c92d5-071f-4181-9975-36a13f1a6dbd)
 # Wrapidly - JVM Server Launcher Wrapper
 
-**Wrapidly** is a lightweight, standalone Java launcher wrapper for Minecraft servers. Made for changing the **JVM Arguments** even if your server hosting doesn't allow it.
+Wrapidly is a lightweight, standalone Java launcher wrapper for Minecraft servers — built for hosting panels like Pterodactyl, but works anywhere.
 
-- Clean logs  
-- Console command remapping  
-- Discord webhook alerts  
-- Customizable via `wrapper.yml`
+Clean logs  
+Console command remapping  
+Discord webhook alerts  
+Configurable with `wrapper.yml`
 
-Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
-Come vibe in our [Discord](https://discord.gg/3BGG8tcvVR)
-
----
-
-## ✨ Features
-
-- **Custom JVM Command** via `wrapper.yml`
-- **Command Remapping** (e.g. `stop → end`)
-- **Discord Webhook Alerts** when the server starts or stops
-- Clean console I/O passthrough
+Made by [Rarfield](https://youtube.com/@Rarfield)  
+Join the community on [Discord](https://discord.gg/3BGG8tcvVR)
 
 ---
 
-## ⚙️ Setup
+## Features
 
-### 1. Add Files to Your Server
-
-- Upload `Wrapidly.jar` to your server folder  
-- If needed, include `snakeyaml-2.4.jar` in `libs/` if you're building from source
+- Custom JVM launch command via `wrapper.yml`
+- Console command remapping (e.g. `stop → end`)
+- Discord webhook alerts on server start and stop
+- Clean input/output passthrough
+- Launcher exits automatically when the server process ends
 
 ---
 
-### 2. First Run = Auto Setup
+## Setup
 
-On the first launch, `wrapper.yml` will be auto-created:
+### 1. Upload Files
+
+- Upload `Wrapidly.jar` to your server folder.
+- If you're building it yourself, include `snakeyaml-2.4.jar` in a `libs/` directory.
+
+---
+
+### 2. First Run Generates Config
+
+Wrapidly creates `wrapper.yml` automatically if it doesn’t exist:
 
 ```yaml
 # Wrapidly Config
@@ -44,30 +45,30 @@ webhook: ""  # Optional: Discord webhook URL
 remap:
   # stop: end
   # restart: stop
-````
+```
 
 ---
 
-## ▶️ How to Launch
+## Usage
 
-**Startup command:**
+Use this as your server startup command:
 
 ```bash
 java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar Wrapidly.jar
 ```
 
-This will:
-
-* Start your Minecraft server with the `jvm:` command
-* Pipe input/output through the console
-* Send webhook notifications if configured
-* Shut down cleanly when the server ends
+Wrapidly will:
+- Start your Minecraft server using the command in `wrapper.yml`
+- Pipe console output and input directly
+- Support remapped commands
+- Send optional webhook alerts
+- Exit with the same code as the server
 
 ---
 
-## 🔁 Command Remapping?
+## Command Remapping
 
-Yup. This lets you map any input command to a different one — perfect for stuff like BungeeCord that needs special exit commands.
+The `remap` section allows you to rewrite console commands in real time. This is useful for tools like BungeeCord, which require custom shutdown commands.
 
 Example:
 
@@ -77,13 +78,13 @@ remap:
   restart: stop
 ```
 
-So when you type `stop`, Wrapidly will actually send `end`.
+Typing `stop` in the console will actually send `end` to the server process.
 
 ---
 
 ## License
 
-Licensed under the **MIT License** —
-Use it, fork it, ship it, just give credit 🙏
+Licensed under the MIT License.  
+You're free to use, modify, and redistribute — just credit the author.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
