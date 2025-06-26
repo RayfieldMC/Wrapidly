@@ -1,15 +1,49 @@
-<p align="center">
-  <img src="https://rarfield.github.io/assets/logo.svg" alt="Wrapidly Logo" width="80" />
-</p>
+![image(2)](https://github.com/user-attachments/assets/ffa35a17-44a4-4f5f-aed9-cfc5f35c009d)
 
-<h1 align="center">✨ Wrapidly is Now Live ✨</h1>
+# Wrapidly - JVM Server Launcher Wrapper
 
-<p align="center">
-  A lightweight and customizable Minecraft server bootstrapper with remaps, webhooks, and launch monitoring baked into a single .jar.
-</p>
+Wrapidly is a **lightweight, standalone Java launcher wrapper** for Minecraft servers — designed for hosting panels like **Pterodactyl**!  
+Easily tweak JVM arguments, **remap commands** (like `stop → end` for BungeeCord), and get clean **Discord webhook alerts** when your server starts or stops.
 
-<p align="center">
-  <a href="https://rarfield.github.io/">
-    <img src="https://img.shields.io/badge/Visit-Website-purple?style=for-the-badge" />
-  </a>
-</p>
+Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
+Come vibe in our [Discord](https://discord.gg/3BGG8tcvVR)
+
+---
+
+## License
+
+Licensed under the **MIT License**.  
+You’re free to use, modify, and share — just drop a credit 🙌
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## Features
+
+- **Custom JVM arguments** from `wrapper.properties`
+- **Command remapping** using `remap.` keys (ex: remap.stop=end)
+- **Discord webhook** support for start/stop alerts
+
+---
+
+## Getting Started
+
+### Upload the Files
+
+Just drop `Launcher.jar` into your server folder.  
+On the **first run**, a `wrapper.properties` file will auto-generate with all settings:
+
+```properties
+# JVM command to start your Minecraft server
+jvm=java -jar server.jar
+
+# Discord webhook URL (optional)
+webhook=
+
+# Command remapping (optional)
+# Format: remap.<original_command>=<replacement_command>
+# 
+# Examples (uncomment to enable):
+# remap.stop=end
+# remap.restart=restartwrapper
