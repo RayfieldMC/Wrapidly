@@ -1,27 +1,47 @@
 package rarfield;
 
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.util.*;
 
 public class Launcher {
-    private static final String CYAN = "\u001B[36m";
-    private static final String RED = "\u001B[31m";
-    private static final String GREEN = "\u001B[32m";
-    private static final String YELLOW = "\u001B[33m";
-    private static final String RESET = "\u001B[0m";
 
     public static void main(String[] args) {
-        logHeader("WRAPIDLY LAUNCHER v1.0.6");
+        while (true) {
+            LaunchResult result = launchOnce();
+
+            if (result.exitCode == 0) {
+                log("[OK] Server stopped normally. Exiting Wrapidly.");
+                break;
+            }
+
+            if (!result.autoRestart) {
+                log("[X] Server crashed and autoRestart is disabled. Exiting Wrapidly.");
+                break;
+            }
+
+            log("[!] Server crashed. Restarting due to autoRestart = true.");
+        }
+    }
+
+    private static LaunchResult launchOnce() {
+        printBanner();
+
+        File jar = new File("server.jar");
+        if (!jar.exists()) {
+            log("[X] server.jar not found.");
+            return new LaunchResult(1, false);
+        } else {
+            log("[OK] server.jar found.");
+        }
 
         File configFile = new File("wrapper.yml");
-        Map<String, Object> config;
+        Map<String, Object> config = new HashMap<>();
 
         try {
             if (!configFile.exists()) {
@@ -30,160 +50,143 @@ public class Launcher {
                             # Wrapidly Config
                             jvm: java -jar server.jar
                             webhook: ""
+
                             remap:
                               # stop: end
+
                             macros:
-                              # restartserver: |
-                                # say Restarting...
-                                # stop
-                            autoRestart: true
+                              # reboot: |
+                              #   say Rebooting...
+                              #   save-all
+                              #   stop
+
                             requireHealthyStartup: true
-                            preStart:
-                              - echo Hello
+                            autoRestart: true
+
+                            preStartCommands:
+                              # - echo Preparing to launch...
+                              # - mkdir logs
                             """);
                 }
-                logInfo("Created default wrapper.yml.");
+                log("[OK] Created default wrapper.yml.");
             }
 
             Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
             config = yaml.load(new FileInputStream(configFile));
-
         } catch (Exception e) {
-            logError("Failed to load wrapper.yml: " + e.getMessage());
-            return;
+            log("[X] Failed to load wrapper.yml: " + e.getMessage());
+            return new LaunchResult(1, false);
         }
 
         String jvmCommand = ((String) config.getOrDefault("jvm", "java -jar server.jar")).trim();
-        String webhookUrl = ((String) config.getOrDefault("webhook", "")).trim();
-        boolean autoRestart = Boolean.TRUE.equals(config.get("autoRestart"));
-        boolean requireHealthy = Boolean.TRUE.equals(config.get("requireHealthyStartup"));
+        String webhook = ((String) config.getOrDefault("webhook", "")).trim();
+        boolean autoRestart = Boolean.parseBoolean(String.valueOf(config.getOrDefault("autoRestart", "false")));
+        boolean requireHealthyStartup = Boolean.parseBoolean(String.valueOf(config.getOrDefault("requireHealthyStartup", "false")));
 
         Map<String, String> remap = new HashMap<>();
         if (config.get("remap") instanceof Map<?, ?> map) {
-            for (Object key : map.keySet()) {
-                remap.put(String.valueOf(key), String.valueOf(map.get(key)));
-            }
+            map.forEach((k, v) -> remap.put(String.valueOf(k), String.valueOf(v)));
         }
 
         Map<String, List<String>> macros = new HashMap<>();
         if (config.get("macros") instanceof Map<?, ?> map) {
             for (Object key : map.keySet()) {
-                String name = String.valueOf(key);
-                String value = String.valueOf(map.get(key));
-                macros.put(name, Arrays.asList(value.split("\\r?\\n")));
+                String[] lines = String.valueOf(map.get(key)).split("\\r?\\n");
+                macros.put(String.valueOf(key), Arrays.asList(lines));
             }
         }
 
-        if (!runPreStartupCheck(jvmCommand, webhookUrl) && requireHealthy) {
-            logError("Pre-startup check failed. Launch cancelled.");
-            sendWebhook(webhookUrl, "❌ **Startup check failed. Server not launched.**", 0xff0000);
-            return;
+        List<String> preStartCommands = new ArrayList<>();
+        if (config.get("preStartCommands") instanceof List<?> list) {
+            for (Object o : list) preStartCommands.add(String.valueOf(o));
         }
 
-        runPreStartCommands(config);
+        if (!preStartCommands.isEmpty()) {
+            log("[●] Running pre-start commands...");
+            for (String cmd : preStartCommands) {
+                try {
+                    log("    > " + cmd);
+                    Process p = new ProcessBuilder(cmd.split(" ")).inheritIO().start();
+                    p.waitFor();
+                } catch (Exception e) {
+                    log("[!] Failed: " + e.getMessage());
+                }
+            }
+        }
 
-        do {
-            logInfo("Launching with command: " + jvmCommand);
-            sendWebhook(webhookUrl, "🚀 Server starting...", 0x3aa856);
+        log("[●] Launching server with: " + jvmCommand);
+        sendWebhook(webhook, "Server starting...", 0x3aa856);
 
-            try {
-                ProcessBuilder pb = new ProcessBuilder(jvmCommand.split(" "));
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
+        try {
+            ProcessBuilder pb = new ProcessBuilder(jvmCommand.split(" "));
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
 
-                Thread outputThread = new Thread(() -> {
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            System.out.println(line);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+
+            Thread outputThread = new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                        if (requireHealthyStartup && line.toLowerCase().contains("exception")) {
+                            log("[X] Detected error in startup!");
+                            sendWebhook(webhook, "Startup error detected.", 0xff0000);
                         }
-                    } catch (IOException e) {
-                        logError("Error reading output: " + e.getMessage());
                     }
-                });
+                } catch (IOException e) {
+                    log("[!] Output error: " + e.getMessage());
+                }
+            });
+            outputThread.setDaemon(true);
 
-                Thread inputThread = new Thread(() -> {
-                    try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))) {
-                        String commandLine;
-                        while ((commandLine = consoleReader.readLine()) != null) {
-                            if (commandLine.startsWith("!")) {
-                                String macroName = commandLine.substring(1);
-                                List<String> macroCommands = macros.get(macroName);
-                                if (macroCommands != null) {
-                                    logInfo("Running macro: !" + macroName);
-                                    for (String cmd : macroCommands) {
-                                        writer.write(cmd);
-                                        writer.newLine();
-                                    }
-                                    writer.flush();
-                                } else {
-                                    logError("Unknown macro: !" + macroName);
-                                }
-                                continue;
+            Thread inputThread = new Thread(() -> {
+                try (BufferedReader console = new BufferedReader(new InputStreamReader(System.in))) {
+                    String input;
+                    while ((input = console.readLine()) != null) {
+                        if (remap.containsKey(input)) {
+                            String newCmd = remap.get(input);
+                            log("[!] Remap: " + input + " → " + newCmd);
+                            input = newCmd;
+                        }
+
+                        if (macros.containsKey(input)) {
+                            log("[!] Macro: " + input);
+                            for (String macroCmd : macros.get(input)) {
+                                writer.write(macroCmd);
+                                writer.newLine();
+                                writer.flush();
                             }
-
-                            if (remap.containsKey(commandLine)) {
-                                String remapped = remap.get(commandLine);
-                                logInfo("Remapped: " + commandLine + " → " + remapped);
-                                commandLine = remapped;
-                            }
-
-                            writer.write(commandLine);
+                        } else {
+                            writer.write(input);
                             writer.newLine();
                             writer.flush();
                         }
-                    } catch (IOException e) {
-                        logError("Error sending input: " + e.getMessage());
                     }
-                });
+                } catch (IOException e) {
+                    log("[!] Input error: " + e.getMessage());
+                }
+            });
+            inputThread.setDaemon(true);
 
-                outputThread.start();
-                inputThread.start();
+            outputThread.start();
+            inputThread.start();
 
-                int exitCode = process.waitFor();
-                logInfo("Server exited with code " + exitCode);
-                sendWebhook(webhookUrl, "🛑 Server stopped with code `" + exitCode + "`", 0xc0392b);
+            int exitCode = process.waitFor();
+            log("[!] Server exited with code: " + exitCode);
+            sendWebhook(webhook, "Server stopped with code `" + exitCode + "`", 0xc0392b);
 
-                outputThread.interrupt();
-                inputThread.interrupt();
+            return new LaunchResult(exitCode, autoRestart);
 
-                if (!autoRestart || exitCode == 0) break;
-                logWarn("Server crashed. Restarting...");
-
-            } catch (Exception e) {
-                logError("Failed to launch server: " + e.getMessage());
-                break;
-            }
-        } while (true);
-    }
-
-    private static void logHeader(String msg) {
-        String border = "+------------------------------+";
-        String center = "|  " + msg;
-        while (center.length() < border.length() - 1) center += " ";
-        center += "|";
-
-        System.out.println(CYAN);
-        System.out.println(border);
-        System.out.println(center);
-        System.out.println(border + RESET);
-    }
-
-    private static void logInfo(String msg) {
-        System.out.println(CYAN + "[INFO] " + RESET + msg);
-    }
-
-    private static void logWarn(String msg) {
-        System.out.println(YELLOW + "[WARN] " + RESET + msg);
-    }
-
-    private static void logError(String msg) {
-        System.err.println(RED + "[ERROR] " + RESET + msg);
+        } catch (Exception e) {
+            log("[X] Failed to launch server: " + e.getMessage());
+            return new LaunchResult(1, autoRestart);
+        }
     }
 
     private static void sendWebhook(String url, String msg, int color) {
         if (url == null || url.isEmpty()) return;
+
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestMethod("POST");
@@ -206,68 +209,27 @@ public class Launcher {
 
             conn.getResponseCode();
         } catch (Exception e) {
-            logError("Webhook failed: " + e.getMessage());
+            log("[!] Webhook error: " + e.getMessage());
         }
     }
 
-    private static boolean runPreStartupCheck(String jvmCommand, String webhookUrl) {
-        logHeader("PRE-STARTUP CHECK");
-        boolean allGood = true;
-
-        String jarFile = Arrays.stream(jvmCommand.split(" "))
-                .filter(s -> s.endsWith(".jar"))
-                .findFirst().orElse("server.jar");
-
-        if (!new File(jarFile).exists()) {
-            logError("[X] Missing " + jarFile);
-            allGood = false;
-        } else logInfo("[OK] Found " + jarFile);
-
-        File eula = new File("eula.txt");
-        if (!eula.exists()) {
-            logWarn("[!] Missing eula.txt");
-            allGood = false;
-        } else {
-            try {
-                String content = java.nio.file.Files.readString(eula.toPath());
-                if (!content.contains("eula=true")) {
-                    logWarn("[!] eula.txt not accepted");
-                    allGood = false;
-                } else logInfo("[OK] eula.txt accepted");
-            } catch (IOException e) {
-                logError("[X] Could not read eula.txt");
-                allGood = false;
-            }
-        }
-
-        if (new File("plugins").exists() || new File("mods").exists())
-            logInfo("[OK] Server content folder found");
-        else
-            logWarn("[!] No plugins/ or mods/ folder");
-
-        try (ServerSocket socket = new ServerSocket(25565)) {
-            logInfo("[OK] Port 25565 available");
-        } catch (IOException e) {
-            logWarn("[!] Port 25565 in use");
-            allGood = false;
-        }
-
-        return allGood;
+    private static void log(String msg) {
+        System.out.println(msg);
     }
 
-    private static void runPreStartCommands(Map<String, Object> config) {
-        Object obj = config.get("preStart");
-        if (obj instanceof List<?> list) {
-            for (Object o : list) {
-                try {
-                    String cmd = String.valueOf(o);
-                    logInfo("Running: " + cmd);
-                    Process p = new ProcessBuilder(cmd.split(" ")).inheritIO().start();
-                    p.waitFor();
-                } catch (Exception e) {
-                    logError("Pre-start command failed: " + e.getMessage());
-                }
-            }
+    private static void printBanner() {
+        System.out.println("+------------------------+");
+        System.out.println("|     Wrapidly 1.0.6     |");
+        System.out.println("+------------------------+");
+    }
+
+    private static class LaunchResult {
+        int exitCode;
+        boolean autoRestart;
+
+        LaunchResult(int code, boolean restart) {
+            this.exitCode = code;
+            this.autoRestart = restart;
         }
     }
 }
