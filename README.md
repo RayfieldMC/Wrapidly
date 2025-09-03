@@ -2,7 +2,7 @@
 >Wrapidly is the upgrade over older forks like LaunchHelper.  
 >It’s feature-packed, modern, and perfect for containerized server setups.
 
-# Information
+# Introduction
 
 Wrapidly is a robust Minecraft server launcher that handles **Java agent injection, auto-restarts, macros, remaps, and pre-start commands**.  
 Built for **Java 17+ / Java 21**, it runs smoothly in **Pterodactyl, Multicraft, or any containerized environment**.
