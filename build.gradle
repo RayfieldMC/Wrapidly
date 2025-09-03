@@ -13,7 +13,8 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'rarfield.Launcher'
+                // 👇 Fake MC entrypoint that just calls Wrapidly
+                'Main-Class': 'net.minecraft.server.Main'
         )
     }
 
