@@ -1,6 +1,6 @@
-> **⚠ Modern Project ⚠**  
+> **⚠ Documentation ⚠**  
 >Wrapidly is the upgrade over older forks like LaunchHelper.  
->It’s feature-packed, modern, and perfect for containerized server setups.
+>Documentations can be found on [here](https://rayfieldmc.github.io/docs/introduction).
 
 # Introduction
 
