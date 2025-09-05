@@ -13,7 +13,8 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'rarfield.Launcher'
+                // 👇 Fake MC entrypoint that just calls Wrapidly
+                'Main-Class': 'net.minecraft.server.Main'
         )
     }
 
@@ -21,4 +22,9 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }

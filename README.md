@@ -1,49 +1,79 @@
-![image(2)](https://github.com/user-attachments/assets/ffa35a17-44a4-4f5f-aed9-cfc5f35c009d)
+> **⚠ Documentation ⚠**  
+>Wrapidly is the upgrade over older forks like LaunchHelper.  
+>Documentations can be found on [**here**](https://rayfieldmc.github.io/docs/introduction).
 
-# Wrapidly - JVM Server Launcher Wrapper
+# Introduction
 
-Wrapidly is a **lightweight, standalone Java launcher wrapper** for Minecraft servers — designed for hosting panels like **Pterodactyl**!  
-Easily tweak JVM arguments, **remap commands** (like `stop → end` for BungeeCord), and get clean **Discord webhook alerts** when your server starts or stops.
-
-Made with 💖 by [Rarfield](https://youtube.com/@Rarfield)  
-Come vibe in our [Discord](https://discord.gg/3BGG8tcvVR)
-
----
-
-## License
-
-Licensed under the **MIT License**.  
-You’re free to use, modify, and share — just drop a credit 🙌
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Wrapidly is a robust Minecraft server launcher that handles **Java agent injection, auto-restarts, macros, remaps, and pre-start commands**.  
+Built for **Java 17+ / Java 21**, it runs smoothly in **Pterodactyl, Multicraft, or any containerized environment**.
 
 ---
 
-## Features
-
-- **Custom JVM arguments** from `wrapper.properties`
-- **Command remapping** using `remap.` keys (ex: remap.stop=end)
-- **Discord webhook** support for start/stop alerts
+## ✨ Features
+- ✅ **Java 21+ compatible**  
+- ✅ **Auto-restart** on server crash  
+- ✅ **Pre-start commands**: Run scripts or setup tasks before the server starts  
+- ✅ **Command remaps**: Replace commands (e.g., `stop → end`) automatically  
+- ✅ **Macros support**: Multi-line commands triggered by a single input  
+- ✅ **Startup health detection**: Checks server logs for exceptions on startup  
+- ✅ **Webhook notifications**: Sends server status to Discord or other endpoints  
+- ✅ **Graceful shutdown hook**: Logs when Wrapidly is shutting down  
+- ✅ **Cross-platform**: Works on Windows/Linux without attach.dll issues
+- ✅ **Startup jar bypass**: Works on panels that validate server jars, letting you run your custom Minecraft server without panel restrictions
 
 ---
 
-## Getting Started
+## ⚡ How to Use
 
-### Upload the Files
+1. Download `Wrapidly.jar` from [Releases](../../releases).  
 
-Just drop `Launcher.jar` into your server folder.  
-On the **first run**, a `wrapper.properties` file will auto-generate with all settings:
+2. Place it in your **server root folder**.  
 
-```properties
-# JVM command to start your Minecraft server
-jvm=java -jar server.jar
+3. Configure `wrapper.yml` (auto-created if missing):
 
-# Discord webhook URL (optional)
-webhook=
+   ```yaml
+   jvm: java -jar server.jar
+   webhook: ""            # Discord webhook URL or similar
+   autoRestart: true
+   requireHealthyStartup: true
 
-# Command remapping (optional)
-# Format: remap.<original_command>=<replacement_command>
-# 
-# Examples (uncomment to enable):
-# remap.stop=end
-# remap.restart=restartwrapper
+   remap:
+     # stop: end
+
+   macros:
+     # reboot:
+     #   say Rebooting...
+     #   save-all
+     #   stop
+
+   preStartCommands:
+     # - echo Preparing to launch...
+   ```
+
+4. Set your panel to run `Wrapidly-{version}.jar` instead of `server.jar`.
+
+---
+
+## 🔧 Building from Source
+
+Requirements:
+
+* Java 21+
+* Gradle
+
+Build:
+
+```bash
+gradle clean build
+```
+
+Compiled jar will be in:
+
+```
+build/libs/Wrapidly-{version}.jar
+```
+
+---
+
+>**⚡ Pro tip**  
+>Wrapidly actively monitors your server for startup errors, supports macros/remaps, and auto-restarts, making server management way smoother than older forks.
