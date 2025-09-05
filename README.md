@@ -1,6 +1,6 @@
 > **⚠ Documentation ⚠**  
 >Wrapidly is the upgrade over older forks like LaunchHelper.  
->Documentations can be found on [**here**](https://rayfieldmc.github.io/docs/introduction).
+>Documentations can be found on [**here**](https://rayfieldmc.github.io/docs/).
 
 # Introduction
 
